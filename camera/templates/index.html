@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Raspberry Pi Camera Stream</title>
+</head>
+<body>
+    <h1>Raspberry Pi Camera Stream</h1>
+    <img id="video_feed" src="{{ url_for('video_feed') }}">
+    <br>
+    <button onclick="takePhoto()">Take Photo</button>
+    <button onclick="recordVideo()">Record Video</button>
+
+    <script>
+        function takePhoto() {
+            fetch('/take_photo')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to take photo');
+                    }
+                    return response.blob();
+                })
+                .then(blob => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'photo.jpg';
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to take photo');
+                });
+        }
+
+        function recordVideo() {
+            fetch('/record_video')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to record video');
+                    }
+                    return response.blob();
+                })
+                .then(blob => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'video.h264';
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Failed to record video');
+                });
+        }
+    </script>
+</body>
+</html>
